@@ -34,6 +34,7 @@ async function run() {
         const storyCollection = client.db('touristDB').collection('stories');
         const bookingCollection = client.db('touristDB').collection('bookings');
         const wishlistCollection = client.db('touristDB').collection('wishlists');
+        const tourGuideCollection = client.db('touristDB').collection('tourGuides');
 
 
         // jwt collection
@@ -149,6 +150,11 @@ async function run() {
         })
 
         // packages collection
+        app.post('/packages', async(req, res)=>{
+            const package = req.body;
+            const result = await packageCollection.insertOne(package);
+            res.send(result);
+        })
         app.get('/packages', async(req, res)=>{
             const result = await packageCollection.find().toArray();
             res.send(result);
@@ -207,6 +213,30 @@ async function run() {
             const result = await bookingCollection.deleteOne(query);
             res.send(result);
         })
+        // make bookings status change api
+        app.patch('/bookings/accepted/:id', async(req, res)=>{
+            const id = req.params.id;
+            const filter = {_id: new ObjectId(id)};
+            const updateDoc = {
+                $set: {
+                    status : 'accepted'
+                }
+            }
+            const result = await bookingCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        })
+        app.patch('/bookings/rejected/:id', async(req, res)=>{
+            const id = req.params.id;
+            const filter = {_id: new ObjectId(id)};
+            const updateDoc = {
+                $set: {
+                    status : 'rejected'
+                }
+            }
+            const result = await bookingCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        })
+
 
         // wishlists collection
         app.post('/wishlists', async(req, res)=>{
@@ -228,6 +258,23 @@ async function run() {
             const query = {_id: new ObjectId(id)}
             const result = await wishlistCollection.deleteOne(query);
             res.send(result)
+        })
+
+        // tour guide api
+        app.post('/tourGuides', async(req, res)=>{
+            const guide = req.body;
+            const result = await tourGuideCollection.insertOne(guide);
+            res.send(result);
+        })
+        app.get('/tourGuides', async(req, res)=>{
+            const guide = await tourGuideCollection.find().toArray();
+            res.send(guide);
+        })
+        app.get('/tourGuides/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await tourGuideCollection.findOne(query);
+            res.send(result);
         })
 
 
