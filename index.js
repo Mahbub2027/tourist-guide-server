@@ -35,6 +35,7 @@ async function run() {
         const bookingCollection = client.db('touristDB').collection('bookings');
         const wishlistCollection = client.db('touristDB').collection('wishlists');
         const tourGuideCollection = client.db('touristDB').collection('tourGuides');
+        const feedbackCollection = client.db('touristDB').collection('feedbacks');
 
 
         // jwt collection
@@ -274,6 +275,17 @@ async function run() {
             const id = req.params.id;
             const query = {_id: new ObjectId(id)}
             const result = await tourGuideCollection.findOne(query);
+            res.send(result);
+        })
+
+        // create feedback api  for reviews & ratings
+        app.post('/feedbacks', async(req, res)=>{
+            const feedback = req.body;
+            const result = await feedbackCollection.insertOne(feedback);
+            res.send(result);
+        })
+        app.get('/feedbacks', async(req, res)=>{
+            const result = await feedbackCollection.find().toArray();
             res.send(result);
         })
 
